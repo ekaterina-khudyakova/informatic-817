@@ -15,7 +15,8 @@ void Split(char* string, char* delimiters, int* count, char** words)
 //		printf("%d: %s\n", i, words[i]);
 		i++;
 		buf = strtok(NULL, delimiters);
-	} 
+	}
+	words[*count] = NULL;
 	free(buf);
 }
 
