@@ -14,14 +14,14 @@
 #include <errno.h>
 #include <dirent.h>
 
-typedef struct Arg
+/*typedef struct Arg
 {
 	int id;
 	int fd[2];
 	char **file;
 	char *rdstring;
 	char *wrstring;
-}Arg;
+}Arg; */
 
 void *ToRead(void *arg)
 {
@@ -97,6 +97,15 @@ int main(int argc, char **argv)
 	if(inet_aton(argv[1], &servaddr.sin_addr) == 0)
 	{
 		printf("invalide IP\n");
+		close(sockfd);
+		exit(1);
+	}
+
+	strcpy(sendline, "new client\n");
+	if(sendto(sockfd, sendline, strlen(sendline) + 1, 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
+	{
+		printf("can't send messages\n");
+		perror(NULL);
 		close(sockfd);
 		exit(1);
 	}
