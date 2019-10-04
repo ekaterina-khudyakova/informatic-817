@@ -5,6 +5,7 @@
 #include <sys/msg.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 
 int * get_times(char *fname)
 {
@@ -88,15 +89,18 @@ int main(int argc, char **argv)
 
 			message.type = 1;
 			message.dish_type = type;
-			msgsnd(msgid, &message, sizeof(message.dish_type), 0);
+			if(msgsnd(msgid, &message, sizeof(message.dish_type), 0))
+				perror("ERROR*");
 
 			printf("#%d: %d put on table\n", i, type);
 		}
 	}
 
+	msgctl(msgid, IPC_STAT, &mes);
 	message.type = 0;
 	message.dish_type = 0;
-	msgsnd(msgid, &message, sizeof(message.dish_type), 0);
+	if(msgsnd(msgid, &message, sizeof(message.dish_type), 0))
+		perror("ERROR");
 
 	printf("finish washing\n");
 
