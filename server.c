@@ -13,6 +13,10 @@ int main()
 	int sockfd;
 	int clilen, n;
 	char line[1000];
+	unsigned int clientIP[100];
+	unsigned short clientPort[100];
+	int i, number = 0;
+
 	struct sockaddr_in servaddr, cliaddr;
 
 	bzero(&servaddr, sizeof(servaddr));
@@ -43,11 +47,35 @@ int main()
 			exit(1);
 		}
 		printf("%s\n", line);
-		if(sendto(sockfd, line, strlen(line), 0, (struct sockaddr *)&cliaddr, clilen) < 0)
+
+		if(strcmp(line, "new client\n") == 0)
 		{
-			perror(NULL);
-			close(sockfd);
-			exit(1);
+			clientIP[number] = cliaddr.sin_addr.s_addr;
+			clientPort[number] = cliaddr.sin_port;
+			++number;
+			strcpy(line, "success\n");
+			if(sendto(sockfd, line, strlen(line), 0, (struct sockaddr *)&cliaddr, clilen) < 0)
+			{
+				perror(NULL);
+				close(sockfd);
+				exit(1);
+			}
+		}
+		else
+		{
+			for(i = 0; i < number; ++i)
+			{
+				clientIP[i] = cliaddr.sin_addr.s_addr;
+				clientPort[i] = cliaddr.sin_port;
+				if(sendto(sockfd, line, strlen(line), 0, (struct sockaddr *)&cliaddr, clilen) < 0)
+				{
+					perror(NULL);
+					close(sockfd);
+					exit(1);
+				}
+				
+			}
+
 		}
 	}
 	return 0;
